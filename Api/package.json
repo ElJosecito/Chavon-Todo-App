@@ -1,0 +1,11 @@
+{
+  "name": "chavon-todo-app-backend",
+  "version": "1.0.0",
+  "description": "Esta es es el backend de la pureba tecnica",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
