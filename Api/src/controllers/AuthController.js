@@ -1,6 +1,6 @@
 import User from "../models/User";
 import bcrypt from "bcrypt";
-import { generateToken, validateToken } from "../libs/jsonwebtoken";
+import { generateToken } from "../libs/jsonwebtoken";
 
 
 //register user
@@ -25,11 +25,9 @@ const register = async (req, res) => {
         });
         await newUser.save();
 
-        const token = generateToken(newUser._id);
         res.status(201).send({
             status: 201,
             message: "User registered successfully",
-            token,
         });
     }
     catch (error) {
