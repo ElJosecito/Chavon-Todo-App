@@ -29,8 +29,13 @@ app.use(express.urlencoded({ extended: true }));
 
 
 //import routes
+import AuthRoute from "./src/routes/AuthRoute.js";
+import UserRoute from "./src/routes/UserRoute.js";
+import TodoRoute from "./src/routes/TodoRoute.js";
 
 //use routes
+app.use("/api/v1/" , AuthRoute, UserRoute, TodoRoute);
+
 
 
 //define port

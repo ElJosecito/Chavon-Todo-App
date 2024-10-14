@@ -1,6 +1,6 @@
-import User from "../models/User";
+import User from "../models/User.js";
 import bcrypt from "bcrypt";
-import { generateToken } from "../libs/jsonwebtoken";
+import { generateToken } from "../libs/jsonwebtoken.js";
 
 
 //register user
