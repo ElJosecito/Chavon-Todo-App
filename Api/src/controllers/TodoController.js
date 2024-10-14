@@ -4,7 +4,10 @@ import User from "../models/User.js";
 //get all todos
 const getTodos = async (req, res) => {
     try {
-        const todos = await Todo.find({ user: req.user.id });
+        const { id } = req.params;
+
+        // find all todos that belong to the user
+        const todos = await Todo.find({ user: id });
 
         res.status(200).send({
             status: 200,
@@ -21,18 +24,19 @@ const getTodos = async (req, res) => {
 //create todo
 const createTodo = async (req, res) => {
     try {
-        const { title, description, toBeFinisheAt } = req.body;
+        const { title, description, toBeFinishedAt } = req.body;
+        const { id } = req.params;
 
         const todo = new Todo({
             title,
             description,
-            toBeFinisheAt,
-            user: req.user.id,
+            toBeFinishedAt: new Date(toBeFinishedAt),
+            user: id,
         });
 
         await todo.save();
 
-        await User.findByIdAndUpdate(req.user.id, {
+        await User.findByIdAndUpdate(id, {
             $push: {
                 todos: todo._id,
             },
@@ -53,7 +57,7 @@ const createTodo = async (req, res) => {
 //update todo
 const updateTodo = async (req, res) => {
     try {
-        const { title, description, status, toBeFinisheAt } = req.body;
+        const { title, description, status, toBeFinishedAt } = req.body;
 
         const todo = await Todo.findById(req.params.id);
 
@@ -67,7 +71,16 @@ const updateTodo = async (req, res) => {
         todo.title = title;
         todo.description = description;
         todo.status = status;
-        todo.toBeFinishedAt = toBeFinisheAt;
+        todo.toBeFinishedAt = new Date(toBeFinishedAt);
+
+        if (status !== "completed") {
+            todo.finishedAt = null;
+        }
+
+        if (status === "completed") {
+            todo.finishedAt = new Date();
+        }
+
 
         await todo.save();
 
@@ -95,9 +108,14 @@ const deleteTodo = async (req, res) => {
             });
         }
 
-        await User.findByIdAndUpdate(req.user.id, {
-            $pull: { todos: todo._id },
-        });
+        const userId = todo.user;
+
+        await User.findByIdAndUpdate(userId, {
+            $pull: {
+                todos: todo._id,
+            },
+        })
+
 
         res.status(200).send({
             status: 200,
