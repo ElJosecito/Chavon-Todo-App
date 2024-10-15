@@ -1,5 +1,3 @@
-import { useAuthStore } from "../../../store/auth"
-
 import { useEffect, useState, useRef } from "react"
 
 import { getTodos, updateTodo, deleteTodo, createTodo } from "../../../api/todos"
@@ -13,7 +11,6 @@ import { Toaster, toast } from "react-hot-toast"
 
 
 function Home() {
-  const { token, userId } = useAuthStore();
   const [todos, setTodos] = useState([]);
   const [draggedTodo, setDraggedTodo] = useState(null);
 
@@ -24,11 +21,11 @@ function Home() {
 
   useEffect(() => {
     const fetchTodos = async () => {
-      const response = await getTodos(userId);
+      const response = await getTodos();
       setTodos(response.todos);
     };
     fetchTodos();
-  }, [token, userId]);
+  }, []);
 
   const onDragStart = (e, id) => {
     setDraggedTodo(id);
@@ -36,29 +33,29 @@ function Home() {
 
   const onDrop = async (e, newStatus) => {
     e.preventDefault();
-    const todoToUpdate = todos.find(todo => todo._id === draggedTodo);
+    const todoToUpdate = todos.find(todo => todo.id === draggedTodo);
     if (todoToUpdate.status !== newStatus) {
       const updatedTodo = { ...todoToUpdate, status: newStatus };
-      const response = await updateTodo(todoToUpdate._id, updatedTodo);
+      const response = await updateTodo(todoToUpdate.id, updatedTodo);
       if (response.status === 404) {
         toast.error(response.message);
         return;
       }
-      setTodos(todos.map(todo => (todo._id === draggedTodo ? updatedTodo : todo)));
+      setTodos(todos.map(todo => (todo.id === draggedTodo ? updatedTodo : todo)));
     }
   };
 
   const handleDeleteTodo = async (e) => {
     e.preventDefault();
-    const todoToDelete = todos.find(todo => todo._id === draggedTodo);
+    const todoToDelete = todos.find(todo => todo.id === draggedTodo);
     if (todoToDelete) {
-      const response = await deleteTodo(todoToDelete._id);
+      const response = await deleteTodo(todoToDelete.id);
       toast.success(response.message);
       if (response.status === 404) {
         toast.error(response.message);
         return;
       }
-      setTodos(todos.filter(todo => todo._id !== draggedTodo));
+      setTodos(todos.filter(todo => todo.id !== draggedTodo));
       
     }
   };
@@ -75,7 +72,7 @@ function Home() {
       description,
       toBeFinishedAt,
     };
-    const response = await createTodo(userId, newTodo);
+    const response = await createTodo( newTodo);
     toast.success(response.message);
     if (response.error) {
       toast.error(response.message);
@@ -95,49 +92,8 @@ function Home() {
       <section className="w-full min-h-screen h-fit flex justify-center items-center bg-[#F7F9FB]">
         <div className="flex flex-wrap justify-evenly w-full max-w-screen-2xl p-8 pt-24 gap-3 ">
 
-          {/* Pending */}
-          <div
-            className="min-h-[850px] bg-[#ffd86d7e] px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
-            onDragOver={allowDrop}
-            onDrop={(e) => onDrop(e, 'pending')}
-          >
-            <h1 className="text-4xl font-black text-yellow-400 my-10">TODO</h1>
-            {todos.map(todo => (
-              todo && todo.status === 'pending' && (
-                <Card key={todo._id} id={todo._id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
-              )
-            ))}
-          </div>
 
-          {/* In Progress */}
-          <div
-            className="min-h-[850px] bg-blue-400 px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
-            onDragOver={allowDrop}
-            onDrop={(e) => onDrop(e, 'progress')}
-          >
-            <h1 className="text-4xl font-black text-yellow-400 my-10">In Progress</h1>
-            {todos.map(todo => (
-              todo && todo.status === 'progress' && (
-                <Card key={todo._id} id={todo._id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
-              )
-            ))}
-          </div>
-
-          {/* Completed */}
-          <div
-            className="min-h-[850px] bg-green-400 px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
-            onDragOver={allowDrop}
-            onDrop={(e) => onDrop(e, 'completed')}
-          >
-            <h1 className="text-4xl font-black text-yellow-400 my-10">Completed</h1>
-            {todos.map(todo => (
-              todo && todo.status === 'completed' && (
-                <Card key={todo._id} id={todo._id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
-              )
-            ))}
-          </div>
-
-          <div className="flex flex-col gap-4 justify-between max-h-[850px]">
+        <div className="flex flex-col gap-4 justify-between max-h-[850px]">
             {/* add task form */}
             <div className="bg-white p-4 w-full md:w-80 rounded-2xl ">
               <form onSubmit={(e)=>{
@@ -171,6 +127,49 @@ function Home() {
               <Trash size={100} color="white" />
             </div>
           </div>
+          {/* Pending */}
+          <div
+            className="min-h-[850px] bg-[#ffd86d7e] px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
+            onDragOver={allowDrop}
+            onDrop={(e) => onDrop(e, 'pending')}
+          >
+            <h1 className="text-4xl font-black text-yellow-400 my-10">TODO</h1>
+            {todos.map(todo => (
+              todo && todo.status === 'pending' && (
+                <Card key={todo.id} id={todo.id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
+              )
+            ))}
+          </div>
+
+          {/* In Progress */}
+          <div
+            className="min-h-[850px] bg-blue-400 px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
+            onDragOver={allowDrop}
+            onDrop={(e) => onDrop(e, 'progress')}
+          >
+            <h1 className="text-4xl font-black text-yellow-400 my-10">In Progress</h1>
+            {todos.map(todo => (
+              todo && todo.status === 'progress' && (
+                <Card key={todo.id} id={todo.id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
+              )
+            ))}
+          </div>
+
+          {/* Completed */}
+          <div
+            className="min-h-[850px] bg-green-400 px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
+            onDragOver={allowDrop}
+            onDrop={(e) => onDrop(e, 'completed')}
+          >
+            <h1 className="text-4xl font-black text-yellow-400 my-10">Completed</h1>
+            {todos.map(todo => (
+              todo && todo.status === 'completed' && (
+                <Card key={todo.id} id={todo.id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
+              )
+            ))}
+          </div>
+
+
         </div>
       </section>
       <Toaster position="bottom-center"/>

@@ -11,18 +11,18 @@ export const getTodoById = async (id) => {
     }
 };
 
-export const getTodos = async (id) => {
+export const getTodos = async () => {
     try {
-        const response = await axios.get(`/tasks/${id}`);
+        const response = await axios.get(`/tasks`);
         return response.data;
     } catch (error) {
         return error.response.data;
     }
 };
 
-export const createTodo = async (id, task) => {
+export const createTodo = async (task) => {
     try {
-        const response = await axios.post(`/tasks/create/${id}`, task);
+        const response = await axios.post(`/tasks/create`, task);
         return response.data;
     } catch (error) {
         return error.response.data;

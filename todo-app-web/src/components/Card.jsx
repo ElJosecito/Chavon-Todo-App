@@ -1,6 +1,7 @@
 import { format } from '@formkit/tempo';
 import { Ellipsis } from 'lucide-react';
 import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 
 //routing
 import { Link } from 'react-router-dom'
@@ -84,5 +85,13 @@ const Card = ({ id, title, description, toBeFinishedAt, status, onDragStart }) =
     );
 }
 
+Card.propTypes = {
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    toBeFinishedAt: PropTypes.instanceOf(Date).isRequired,
+    status: PropTypes.oneOf(['progress', 'completed', 'pending']).isRequired,
+    onDragStart: PropTypes.func.isRequired,
+};
 
 export default Card;

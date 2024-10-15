@@ -18,15 +18,6 @@ function Footer() {
                         <motion.li whileHover={{ scale: 1.3 }}>
                             <a href='/'>Home</a>
                         </motion.li>
-                        <motion.li whileHover={{ scale: 1.3 }}>
-                            <a href='/services'>Services</a>
-                        </motion.li>
-                        <motion.li whileHover={{ scale: 1.3 }}>
-                            <a href='/about'>About</a>
-                        </motion.li>
-                        <motion.li whileHover={{ scale: 1.3 }}>
-                            <a href='/contact'>Contact</a>
-                        </motion.li>
                     </ul>
                 </nav>
 

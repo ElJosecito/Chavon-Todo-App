@@ -1,17 +1,17 @@
 import { useParams } from "react-router-dom"
-import { useAuthStore } from "../../../store/auth"
-import { getTodoById, updateTodo } from "../../../api/todos"
+import { getTodoById, updateTodo, deleteTodo } from "../../../api/todos"
 import { useEffect, useState, useRef } from "react"
 import { format } from "@formkit/tempo"
-import { Ellipsis } from "lucide-react"
+import { Trash } from "lucide-react"
 import { motion } from "framer-motion"
 
 import { toast, Toaster } from "react-hot-toast"
 
+import { useNavigate } from "react-router-dom"
+
 function TaskPage() {
 
     const { id } = useParams()
-    const { userId } = useAuthStore()
 
     const [task, setTask] = useState(null)
 
@@ -21,6 +21,9 @@ function TaskPage() {
     const [status, setStatus] = useState('')
 
     const dateInputRef = useRef(null)
+
+
+    const navigate = useNavigate()
 
     const handleUpdate = async (e) => {
         e.preventDefault()
@@ -46,15 +49,33 @@ function TaskPage() {
         dateInputRef.current.value = ''
     }
 
+    const handleDeleteTodo = async () => {
+        const response = await deleteTodo(id)
+        if (response.status === 404) {
+            toast.error(response.message)
+            return
+        }
+        toast.success(response.message)
+        setTimeout(() => {
+            navigate('/')
+        }, 2500)
+    }
 
-    const fetchTask = async () => {
+
+
+    const fetchTask = async (id) => {
         const response = await getTodoById(id)
+        if (response.status === 404) {
+            toast.error(response.message)
+            navigate('/404')
+            return
+        }
         setTask(response.todo)
     }
 
     useEffect(() => {
-        fetchTask()
-    }, [id, userId])
+        fetchTask(id)
+    }, [id])
 
 
     useEffect(() => {
@@ -91,8 +112,9 @@ function TaskPage() {
                                     className="p-3 rounded-xl hover:bg-blue-500/10 cursor-pointer"
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.95 }}
+                                    onClick={() => handleDeleteTodo()}
                                 >
-                                    <Ellipsis size={24} color="#3b82f6" />
+                                    <Trash size={24} color="red" />
                                 </motion.div>
                             </div>
 
@@ -191,6 +213,7 @@ function TaskPage() {
 
                         <button className="bg-blue-500 text-white p-2 rounded-xl">Update</button>
                     </motion.form>
+
 
 
                 </div>

@@ -1,11 +1,1 @@
-[
-  {
-    "id": "1128dd7f-45ef-4551-a595-c5022c8a2d32",
-    "title": "Sample Todo 2",
-    "description": "This is a sample todo",
-    "status": "pending",
-    "createdAt": "2024-10-15T18:16:41.980Z",
-    "toBeFinishedAt": "2024-10-15T12:00:00.000Z",
-    "finishedAt": null
-  }
-]
+[]
