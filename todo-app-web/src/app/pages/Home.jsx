@@ -1,17 +1,26 @@
 import { useAuthStore } from "../../../store/auth"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
-import { getTodos, updateTodo, deleteTodo } from "../../../api/todos"
+import { getTodos, updateTodo, deleteTodo, createTodo } from "../../../api/todos"
 
 import { Trash } from "lucide-react"
 
 import Card from "../../components/Card"
-function Home() {
 
+// hot toast
+import { Toaster, toast } from "react-hot-toast"
+
+
+function Home() {
   const { token, userId } = useAuthStore();
   const [todos, setTodos] = useState([]);
   const [draggedTodo, setDraggedTodo] = useState(null);
+
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [toBeFinishedAt, setToBeFinishedAt] = useState('');
+  const dateInputRef = useRef(null);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -30,8 +39,11 @@ function Home() {
     const todoToUpdate = todos.find(todo => todo._id === draggedTodo);
     if (todoToUpdate.status !== newStatus) {
       const updatedTodo = { ...todoToUpdate, status: newStatus };
-      console.log(updatedTodo);
-      await updateTodo(todoToUpdate._id, updatedTodo);
+      const response = await updateTodo(todoToUpdate._id, updatedTodo);
+      if (response.status === 404) {
+        toast.error(response.message);
+        return;
+      }
       setTodos(todos.map(todo => (todo._id === draggedTodo ? updatedTodo : todo)));
     }
   };
@@ -40,8 +52,13 @@ function Home() {
     e.preventDefault();
     const todoToDelete = todos.find(todo => todo._id === draggedTodo);
     if (todoToDelete) {
-      await deleteTodo(todoToDelete._id);
-      setTodos(todos.filter(todo => todo._id !== draggedTodo)); 
+      const response = await deleteTodo(todoToDelete._id);
+      if (response.status === 404) {
+        toast.error(response.message);
+        return;
+      }
+      setTodos(todos.filter(todo => todo._id !== draggedTodo));
+      
     }
   };
 
@@ -49,60 +66,115 @@ function Home() {
     e.preventDefault();
   };
 
+  //handle create todo
+  const handleCreateTodo = async (e) => {
+    e.preventDefault();
+    const newTodo = {
+      title,
+      description,
+      toBeFinishedAt,
+    };
+    console.log(newTodo);
+    const response = await createTodo(userId, newTodo);
+    toast.success(response.message);
+    if (response.error) {
+      toast.error(response.message);
+      return;
+    }
+    setTodos([...todos, response.todo]);
+
+    //reset form
+    setTitle('');
+    setDescription('');
+    dateInputRef.current.value = "";
+
+  }
+
   return (
-    <section className='w-full h-screen flex justify-center items-center bg-[#F7F9FB]'>
-      <div className='flex justify-evenly w-full max-w-screen-2xl h-full p-8 pt-24'>
+    <>
+      <section className="w-full min-h-screen h-fit flex justify-center items-center bg-[#F7F9FB]">
+        <div className="flex flex-wrap justify-evenly w-full max-w-screen-2xl p-8 pt-24 gap-3 ">
 
-        {/* Pending */}
-        <div
-          className="h-full bg-[#ffd86d7e] px-4 w-80 rounded-2xl"
-          onDragOver={allowDrop}
-          onDrop={(e) => onDrop(e, 'pending')}
-        >
-          <h1 className='text-4xl font-black text-yellow-400 my-10'>TODO</h1>
-          {todos.map(todo => (
-            todo.status === 'pending' && (
-              <Card key={todo._id} id={todo._id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
-            )
-          ))}
-        </div>
+          {/* Pending */}
+          <div
+            className="min-h-[850px] bg-[#ffd86d7e] px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
+            onDragOver={allowDrop}
+            onDrop={(e) => onDrop(e, 'pending')}
+          >
+            <h1 className="text-4xl font-black text-yellow-400 my-10">TODO</h1>
+            {todos.map(todo => (
+              todo && todo.status === 'pending' && (
+                <Card key={todo._id} id={todo._id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
+              )
+            ))}
+          </div>
 
-        {/* In Progress */}
-        <div
-          className="h-full bg-blue-400 px-4 w-80 rounded-2xl"
-          onDragOver={allowDrop}
-          onDrop={(e) => onDrop(e, 'progress')}
-        >
-          <h1 className='text-4xl font-black text-yellow-400 my-10'>In Progress</h1>
-          {todos.map(todo => (
-            todo.status === 'progress' && (
-              <Card key={todo._id} id={todo._id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
-            )
-          ))}
-        </div>
+          {/* In Progress */}
+          <div
+            className="min-h-[850px] bg-blue-400 px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
+            onDragOver={allowDrop}
+            onDrop={(e) => onDrop(e, 'progress')}
+          >
+            <h1 className="text-4xl font-black text-yellow-400 my-10">In Progress</h1>
+            {todos.map(todo => (
+              todo && todo.status === 'progress' && (
+                <Card key={todo._id} id={todo._id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
+              )
+            ))}
+          </div>
 
-        {/* Completed */}
-        <div
-          className="h-full bg-green-400 px-4 w-80 rounded-2xl"
-          onDragOver={allowDrop}
-          onDrop={(e) => onDrop(e, 'completed')}
-        >
-          <h1 className='text-4xl font-black text-yellow-400 my-10'>Completed</h1>
-          {todos.map(todo => (
-            todo.status === 'completed' && (
-              <Card key={todo._id} id={todo._id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
-            )
-          ))}
-        </div>
-        {/* trash */}
-        <div className="self-end bg-red-400 px-4 w-72 h-72 rounded-2xl flex justify-center items-center"
+          {/* Completed */}
+          <div
+            className="min-h-[850px] bg-green-400 px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
+            onDragOver={allowDrop}
+            onDrop={(e) => onDrop(e, 'completed')}
+          >
+            <h1 className="text-4xl font-black text-yellow-400 my-10">Completed</h1>
+            {todos.map(todo => (
+              todo && todo.status === 'completed' && (
+                <Card key={todo._id} id={todo._id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
+              )
+            ))}
+          </div>
+
+          <div className="flex flex-col gap-4 justify-between max-h-[850px]">
+            {/* add task form */}
+            <div className="bg-white p-4 w-full md:w-80 rounded-2xl ">
+              <form onSubmit={(e)=>{
+                handleCreateTodo(e);
+              }}>
+                <h1 className="text-4xl font-black text-yellow-400 my-10">Add Task</h1>
+                <input type="text" placeholder="Title" className="w-full p-2 rounded-xl border border-gray-200 mb-4" value={title} onChange={(e)=>{
+                  setTitle(e.target.value);
+                }} />
+                <textarea placeholder="Description" className="w-full p-2 rounded-xl border border-gray-200 mb-4" value={description} onChange={(e)=>{
+                  setDescription(e.target.value);
+                }}/>
+                <input type="date" className="w-full p-2 rounded-xl border border-gray-200 mb-4" ref={dateInputRef}
+                  onChange={(e)=>{
+                    const selectedDate = new Date(e.target.value); 
+                    const formattedDate = selectedDate.toISOString(); 
+                    setToBeFinishedAt(formattedDate); 
+                  }}
+                />
+                <button className="w-full p-2 rounded-xl bg-yellow-400 text-white">Add Task</button>
+              </form>
+            </div>
+
+
+            {/* Trash */}
+            <div
+              className="self-end bg-red-400 px-4 w-full md:w-80 h-72 rounded-2xl flex justify-center items-center"
               onDragOver={allowDrop}
               onDrop={handleDeleteTodo}
-        >
-          <Trash size={100} color="white" />
+            >
+              <Trash size={100} color="white" />
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+      <Toaster position="bottom-center"/>
+    </>
   );
 }
 

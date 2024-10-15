@@ -20,9 +20,9 @@ export const getTodos = async (id) => {
     }
 };
 
-export const createTodo = async (task) => {
+export const createTodo = async (id, task) => {
     try {
-        const response = await axios.post('/tasks/create', { task });
+        const response = await axios.post(`/tasks/create/${id}`, task);
         return response.data;
     } catch (error) {
         return error.response.data;
@@ -31,7 +31,7 @@ export const createTodo = async (task) => {
 
 export const updateTodo = async (id, task) => {
     try {
-        const response = await axios.put(`/task/update/${id}`,  task );
+        const response = await axios.put(`/task/update/${id}`, task);
         return response.data;
     } catch (error) {
         return error.response.data;
