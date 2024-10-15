@@ -1,15 +1,8 @@
 import express from "express";
 import cors from "cors";
 
-//database connection
-import connect from "./src/database/mongodb.js";
-
 //load env variables
 process.loadEnvFile();
-
-
-//connect to database
-connect();
 
 //initialize express app
 const app = express();
@@ -29,12 +22,15 @@ app.use(express.urlencoded({ extended: true }));
 
 
 //import routes
+import TodoRoute from "./src/routes/TodoRoute.js";
 
 //use routes
+app.use("/api/v1/", TodoRoute);
+
 
 
 //define port
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 
 //listen to port
