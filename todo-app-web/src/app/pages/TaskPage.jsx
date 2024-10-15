@@ -23,8 +23,10 @@ function TaskPage() {
     const dateInputRef = useRef(null)
 
 
+    // Routing
     const navigate = useNavigate()
 
+    // Update Task
     const handleUpdate = async (e) => {
         e.preventDefault()
         const updatedTask = {
@@ -49,6 +51,7 @@ function TaskPage() {
         dateInputRef.current.value = ''
     }
 
+    // Delete Task
     const handleDeleteTodo = async () => {
         const response = await deleteTodo(id)
         if (response.status === 404) {
@@ -58,7 +61,7 @@ function TaskPage() {
         toast.success(response.message)
         setTimeout(() => {
             navigate('/')
-        }, 2500)
+        }, 3000)
     }
 
 

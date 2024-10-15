@@ -3,6 +3,7 @@ import TodoController from "../controllers/TodoController.js";
 
 const router = Router();
 
+// define routes
 router.get("/task/:id", TodoController.getTodo);
 router.get("/tasks", TodoController.getTodos);
 router.post("/tasks/create", TodoController.createTodo);

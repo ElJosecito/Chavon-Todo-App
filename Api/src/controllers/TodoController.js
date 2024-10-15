@@ -17,7 +17,6 @@ const writeData = (data) => {
 //get all todos
 const getTodos = async (req, res) => {
     try {
-        // get all todos
         const todos = await readData();
 
         res.status(200).send({
@@ -140,7 +139,7 @@ const deleteTodo = async (req, res) => {
     }
 };
 
-
+//get todo by id
 const getTodo = async (req, res) => {
     try {
         const todos = await readData();

@@ -16,7 +16,7 @@ function Home() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [toBeFinishedAt, setToBeFinishedAt] = useState('');
+  const [toBeFinishedAt, setToBeFinishedAt] = useState(new Date().toISOString());
   const dateInputRef = useRef(null);
 
   useEffect(() => {
@@ -72,6 +72,12 @@ function Home() {
       description,
       toBeFinishedAt,
     };
+
+    if (!title || !description) {
+      toast.error("All fields are required");
+      return;
+    }
+
     const response = await createTodo( newTodo);
     toast.success(response.message);
     if (response.error) {
@@ -113,7 +119,7 @@ function Home() {
                     setToBeFinishedAt(formattedDate); 
                   }}
                 />
-                <button className="w-full p-2 rounded-xl bg-yellow-400 text-white">Add Task</button>
+                <button className="w-full p-2 rounded-xl font-bold bg-yellow-400 text-white">Add Task</button>
               </form>
             </div>
 
@@ -143,11 +149,11 @@ function Home() {
 
           {/* In Progress */}
           <div
-            className="min-h-[850px] bg-blue-400 px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
+            className="min-h-[850px] bg-[#60a5fa9a] px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
             onDragOver={allowDrop}
             onDrop={(e) => onDrop(e, 'progress')}
           >
-            <h1 className="text-4xl font-black text-yellow-400 my-10">In Progress</h1>
+            <h1 className="text-4xl font-black text-blue-600 my-10">Progress</h1>
             {todos.map(todo => (
               todo && todo.status === 'progress' && (
                 <Card key={todo.id} id={todo.id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
@@ -157,19 +163,17 @@ function Home() {
 
           {/* Completed */}
           <div
-            className="min-h-[850px] bg-green-400 px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
+            className="min-h-[850px] bg-[#4ADE80] px-4 w-full md:w-80 rounded-2xl mb-4 md:mb-0 pb-5"
             onDragOver={allowDrop}
             onDrop={(e) => onDrop(e, 'completed')}
           >
-            <h1 className="text-4xl font-black text-yellow-400 my-10">Completed</h1>
+            <h1 className="text-4xl font-black text-green-800 my-10">Completed</h1>
             {todos.map(todo => (
               todo && todo.status === 'completed' && (
                 <Card key={todo.id} id={todo.id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
               )
             ))}
           </div>
-
-
         </div>
       </section>
       <Toaster position="bottom-center"/>
