@@ -44,10 +44,6 @@ function Header() {
         setMenu(!menu)
     }
 
-
-    // display mobile menu
-    const mobileMenu = menu ? 'flex' : 'hidden'
-
     //path
     const path = useLocation().pathname
 
@@ -58,7 +54,7 @@ function Header() {
                     <div className='text-2xl font-bold'>
                         <div className='lg:flex gap-4 items-center hidden'>
                             <div className='flex items-center gap-4 '>
-                                <Link to='/profile'>
+                                <Link to='/home'>
                                     {
                                         userHeader.image ? (
                                             <img src={`${userHeader.image}`} alt="user" className='w-10 h-10 rounded-full' />

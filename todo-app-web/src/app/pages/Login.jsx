@@ -28,12 +28,6 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     const response = await login(email, password);
-    if (response.error) {
-      setError(response.message);
-      toast.error(response.message);
-      setLoading(false);
-      return;
-    }
 
     if (response.status === 404) {
       setError(response.message);

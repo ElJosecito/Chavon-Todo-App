@@ -1,13 +1,24 @@
-import Todo from "../models/Todo.js";
-import User from "../models/User.js";
+import fs from "fs";
+// uuid
+import { v4 as uuidv4 } from "uuid";
+
+// Leer archivo JSON
+const readData = () => {
+    const data = fs.readFileSync('../api/src/data/todos.json', 'utf-8');
+    return JSON.parse(data);
+};
+
+// Guardar datos en archivo JSON
+const writeData = (data) => {
+    fs.writeFileSync('../api/src/data/todos.json', JSON.stringify(data, null, 2));
+};
+
 
 //get all todos
 const getTodos = async (req, res) => {
     try {
-        const { id } = req.params;
-
-        // find all todos that belong to the user
-        const todos = await Todo.find({ user: id });
+        // get all todos
+        const todos = await readData();
 
         res.status(200).send({
             status: 200,
@@ -21,31 +32,32 @@ const getTodos = async (req, res) => {
     }
 }
 
+
 //create todo
 const createTodo = async (req, res) => {
     try {
         const { title, description, toBeFinishedAt } = req.body;
-        const { id } = req.params;
 
-        const todo = new Todo({
+        const todos = await readData();
+
+        const newTodo = {
+            id: uuidv4(),
             title,
             description,
+            status: "pending",
+            createdAt: new Date(),
             toBeFinishedAt: new Date(toBeFinishedAt),
-            user: id,
-        });
+            finishedAt: null,
+        };
 
-        await todo.save();
+        todos.push(newTodo);
 
-        await User.findByIdAndUpdate(id, {
-            $push: {
-                todos: todo._id,
-            },
-        });
+        writeData(todos);
 
         res.status(201).send({
             status: 201,
             message: "Todo created successfully",
-            todo,
+            todo: newTodo,
         });
     }
     catch (error) {
@@ -59,7 +71,9 @@ const updateTodo = async (req, res) => {
     try {
         const { title, description, status, toBeFinishedAt } = req.body;
 
-        const todo = await Todo.findById(req.params.id);
+        const todos = await readData();
+
+        const todo = todos.find(todo => todo.id === req.params.id);
 
         if (!todo) {
             return res.status(404).send({
@@ -82,7 +96,7 @@ const updateTodo = async (req, res) => {
         }
 
 
-        await todo.save();
+        writeData(todos);  
 
         res.status(200).send({
             status: 200,
@@ -99,7 +113,9 @@ const updateTodo = async (req, res) => {
 //delete todo
 const deleteTodo = async (req, res) => {
     try {
-        const todo = await Todo.findByIdAndDelete(req.params.id);
+        const todos = await readData();
+
+        const todo = todos.find(todo => todo.id === req.params.id);
 
         if (!todo) {
             return res.status(404).send({
@@ -108,14 +124,10 @@ const deleteTodo = async (req, res) => {
             });
         }
 
-        const userId = todo.user;
+        const index = todos.indexOf(todo);
+        todos.splice(index, 1);
 
-        await User.findByIdAndUpdate(userId, {
-            $pull: {
-                todos: todo._id,
-            },
-        })
-
+        writeData(todos);
 
         res.status(200).send({
             status: 200,
@@ -131,7 +143,9 @@ const deleteTodo = async (req, res) => {
 
 const getTodo = async (req, res) => {
     try {
-        const todo = await Todo.findById(req.params.id);
+        const todos = await readData();
+
+        const todo = todos.find(todo => todo.id === req.params.id);
 
         if (!todo) {
             return res.status(404).send({

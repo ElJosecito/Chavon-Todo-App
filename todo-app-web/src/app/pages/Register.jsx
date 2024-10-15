@@ -30,12 +30,6 @@ function Register() {
     e.preventDefault();
     setLoading(true);
     const response = await register(email, password, firstName, lastName);
-    if (response.error) {
-      setError(response.message);
-      toast.error(response.message);
-      setLoading(false);
-      return;
-    }
 
     if (response.status === 404) {
       setError(response.message);
@@ -43,13 +37,13 @@ function Register() {
       setLoading(false);
       return;
     }
-
+    console.log(response);
     setToken(response.token);
     setUser(response.user);
-    setUserId(response.user.id);
-    toast.success('Registered successfully');
+    setUserId(response.user._id);
+    toast.success(response.message);
     setTimeout(() => {
-      navigate('/home')
+      navigate('/')
     }, 1000)
 
   }
@@ -88,7 +82,7 @@ function Register() {
           </form>
         </motion.div>
       </section>
-      <Toaster />
+      <Toaster position="bottom-center"/>
     </>
   )
 }
