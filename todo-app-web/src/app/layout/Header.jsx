@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 
 // icons
-import { Menu, X, User, Plus } from 'lucide-react'
+import { Menu, X, User, House } from 'lucide-react'
 
 //state management
 import { useAuthStore } from '../../../store/auth'
@@ -17,7 +17,7 @@ import { Link, useLocation } from 'react-router-dom'
 function Header() {
 
     const [scroll, setScroll] = useState(false)
-    const isLogged = useAuthStore(state => state.isAuth)
+    const { logout } = useAuthStore()
     const [userHeader, setUserHeader] = useState({})
 
     useEffect(() => {
@@ -56,41 +56,39 @@ function Header() {
             <div className={` w-full  px-0`}>
                 <nav className={`flex justify-between items-center w-full h-20 px-8 rounded-b-md transition-all duration-500  ${scroll ? 'bg-back_white ' : 'bg-transparent'}`}>
                     <div className='text-2xl font-bold'>
-                    <div className='lg:flex gap-4 items-center hidden'>
-                                <div className='flex items-center gap-4 '>
-                                    <Link to='/profile'>
-                                        {
-                                            userHeader.image ? (
-                                                <img src={`${userHeader.image}`} alt="user" className='w-10 h-10 rounded-full' />
-                                            ) : (
-                                                <div className='w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center'>
-                                                    <User color="white" strokeWidth={3}/>
-                                                </div>
-                                            )
-                                        }
-                                    </Link>
-                                    <p className={`text-lg font-semibold capitalize ${scroll ? 'text-black' : `${path !== '/' ? "text-black" : "text-black 2xl:text-back_white "}`}`}>{`${user.firstName}`}</p>
-                                </div>
+                        <div className='lg:flex gap-4 items-center hidden'>
+                            <div className='flex items-center gap-4 '>
+                                <Link to='/profile'>
+                                    {
+                                        userHeader.image ? (
+                                            <img src={`${userHeader.image}`} alt="user" className='w-10 h-10 rounded-full' />
+                                        ) : (
+                                            <div className='w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center'>
+                                                <User color="white" strokeWidth={3} />
+                                            </div>
+                                        )
+                                    }
+                                </Link>
+                                <p className={`text-lg font-semibold capitalize ${scroll ? 'text-black' : `${path !== '/' ? "text-black" : "text-black 2xl:text-back_white "}`}`}>{`${user.firstName}`}</p>
                             </div>
+                        </div>
                     </div>
-                    <ul className='lg:flex gap-8 font-semibold text-base hidden'>
-                        <motion.li whileHover={{ scale: 1.2 }} className='text-sm'>
-                            <a href='/#'>Home</a>
-                        </motion.li>
-                        <motion.li whileHover={{ scale: 1.2 }} className='text-sm'>
-                            <Link to='/todo'>To do</Link>
-                        </motion.li>
-                        <motion.li whileHover={{ scale: 1.2 }} className='text-sm'>
-                            <Link to='/Done'>Done</Link>
-                        </motion.li>
-                    </ul>
-                    
-                    {/* add btn */}
 
-                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{scale: 0.90}} className='flex items-center gap-1 bg-blue-500/30 p-2 px-5 rounded-full'>
-                        <Plus color='#3b82f6' strokeWidth={3} />
-                        <p className='text-blue-500 font-bold'>Add</p>
+                    <div className='flex items-center gap-8'>
+                        {/* Home btn */}
+                        <Link to='/home'>
+                            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.90 }} className='flex items-center gap-1 bg-blue-500/30 p-2 px-5 rounded-full'>
+                                <House color="blue" strokeWidth={2} />
+                            </motion.button>
+                        </Link>
+                    {/* Logout btn */}
+                    <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.90 }} className='flex items-center gap-1 bg-red-500/30 p-2 px-5 rounded-full' onClick={() => {
+                        logout()
+                    }}>
+                        <p className='text-red-500 font-bold'>Log Out</p>
                     </motion.button>
+
+                    </div>
 
 
                     {/* mobile menu */}
@@ -99,10 +97,10 @@ function Header() {
                             {menu ? <X absoluteStrokeWidth /> : <Menu absoluteStrokeWidth />}
                         </button>
                     </div>
-
+                    {/* 
                     <ul className={`flex flex-col gap-8 font-semibold text-base ${mobileMenu} lg:hidden absolute top-20 left-0 right-0 ${scroll ? 'bg-back_white shadow-lg' : 'bg-white'} rounded-md shadow-lg p-8 transition-all duration-500`}>
                         <motion.li whileHover={{ scale: 1.2 }} className='text-sm' onClick={handleMenu}>
-                            <a href='/#'>Home</a>
+                            <a href='/home'>Home</a>
                         </motion.li>
                         <motion.li whileHover={{ scale: 1.2 }} className='text-sm' onClick={handleMenu}>
                             <a href='#services'>Services</a>
@@ -129,7 +127,7 @@ function Header() {
                                 <p className={`text-lg font-semibold capitalize ${scroll ? 'text-black' : `${path !== '/' ? "text-black" : "text-back_white"}`}`}>{`${user.firstName} ${user.lastName}`}</p>
                             </div>
                         </div>
-                    </ul>
+                    </ul> */}
                 </nav>
             </div>
         </header>
