@@ -19,14 +19,6 @@ function Header() {
             }
         })
     }, [])
-
-    // mobile menu
-    const [menu, setMenu] = useState(false)
-
-    const handleMenu = () => {
-        setMenu(!menu)
-    }
-
     //path
     // const path = useLocation().pathname
 

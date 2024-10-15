@@ -1,9 +1,6 @@
 import express from "express";
 import cors from "cors";
 
-//load env variables
-process.loadEnvFile();
-
 //initialize express app
 const app = express();
 
@@ -30,7 +27,7 @@ app.use("/api/v1/", TodoRoute);
 
 
 //define port
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 
 //listen to port
