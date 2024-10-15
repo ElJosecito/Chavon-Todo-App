@@ -16,6 +16,8 @@ import Register from "../app/pages/Register"
 
 import { useAuthStore } from "../../store/auth"
 
+import TaskPage from "../app/pages/TaskPage"
+
 function Router() {
 
   const path = useLocation().pathname
@@ -30,6 +32,7 @@ function Router() {
         <Route path="/register" element={<Register />} />
         <Route element={<ProtectedRoute isAuth={isAuth} />}>
           <Route path="/home" element={<Home />} />
+          <Route path="/task/:id" element={<TaskPage />} />
         </Route>
       </Routes>
       {path === '/' ? null: <Footer />}

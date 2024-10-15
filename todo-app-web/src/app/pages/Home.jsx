@@ -53,6 +53,7 @@ function Home() {
     const todoToDelete = todos.find(todo => todo._id === draggedTodo);
     if (todoToDelete) {
       const response = await deleteTodo(todoToDelete._id);
+      toast.success(response.message);
       if (response.status === 404) {
         toast.error(response.message);
         return;
@@ -74,7 +75,6 @@ function Home() {
       description,
       toBeFinishedAt,
     };
-    console.log(newTodo);
     const response = await createTodo(userId, newTodo);
     toast.success(response.message);
     if (response.error) {
