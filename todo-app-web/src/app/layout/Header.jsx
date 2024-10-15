@@ -19,8 +19,6 @@ function Header() {
             }
         })
     }, [])
-    //path
-    // const path = useLocation().pathname
 
     return (
         <header className='w-full flex justify-center fixed z-[10000] outline outline-b outline-[0.1px] outline-black/20 bg-white'>
