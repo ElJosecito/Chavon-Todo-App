@@ -139,7 +139,7 @@ function Home() {
             onDragOver={allowDrop}
             onDrop={(e) => onDrop(e, 'pending')}
           >
-            <h1 className="text-4xl font-black text-yellow-400 my-10">TODO</h1>
+            <h1 className="text-4xl font-black text-yellow-400 my-10">TO-DO</h1>
             {todos.map(todo => (
               todo && todo.status === 'pending' && (
                 <Card key={todo.id} id={todo.id} title={todo.title} description={todo.description} toBeFinishedAt={todo.toBeFinishedAt} status={todo.status} onDragStart={onDragStart} />
